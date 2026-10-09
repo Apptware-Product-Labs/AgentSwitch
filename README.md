@@ -27,7 +27,7 @@ Shared items live in `~/.config/agentswitch/shared/<tool>/`; every profile symli
 Requires macOS 13+ and the Xcode Command Line Tools (`xcode-select --install`). Full Xcode is not needed.
 
 ```bash
-git clone https://github.com/<you>/AgentSwitch.git
+git clone https://github.com/Apptware-Product-Labs/AgentSwitch.git
 cd AgentSwitch
 ./scripts/make_signing_cert.sh   # once; keeps the Accessibility grant across rebuilds
 ./scripts/install.sh             # builds, backs up ~/.claude & ~/.codex, installs to /Applications, launches
