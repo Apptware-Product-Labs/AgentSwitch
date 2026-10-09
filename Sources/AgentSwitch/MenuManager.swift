@@ -22,8 +22,7 @@ final class MenuManager: NSObject {
     func install() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = item.button {
-            button.image = NSImage(systemSymbolName: "arrow.triangle.2.circlepath", accessibilityDescription: "AgentSwitch")
-            button.image?.isTemplate = true
+            button.image = StatusIcon.cards()
             button.imagePosition = .imageLeading
             button.target = self
             button.action = #selector(togglePanel)
@@ -62,7 +61,7 @@ final class MenuManager: NSObject {
         guard let button = statusItem?.button else { return }
         button.image = NSImage(systemSymbolName: "checkmark.circle.fill", accessibilityDescription: nil)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
-            self?.statusItem?.button?.image = NSImage(systemSymbolName: "arrow.triangle.2.circlepath", accessibilityDescription: "AgentSwitch")
+            self?.statusItem?.button?.image = StatusIcon.cards()
         }
     }
 
@@ -137,5 +136,36 @@ final class MenuManager: NSObject {
         alert.messageText = title
         alert.informativeText = error.localizedDescription
         alert.runModal()
+    }
+}
+
+/// The menu bar glyph: two stacked profile cards, front one filled. Drawn as a template
+/// image so it follows the menu bar's light/dark appearance.
+enum StatusIcon {
+    static func cards() -> NSImage {
+        let size = NSSize(width: 18, height: 16)
+        let img = NSImage(size: size, flipped: false) { _ in
+            let w: CGFloat = 12, h: CGFloat = 8.5, r: CGFloat = 2
+            let back = NSBezierPath(roundedRect: NSRect(x: 5, y: 6, width: w, height: h), xRadius: r, yRadius: r)
+            back.lineWidth = 1.4
+            NSColor.black.setStroke(); back.stroke()
+
+            let frontRect = NSRect(x: 1, y: 1.5, width: w, height: h)
+            // Knock out the back card where the front overlaps, so the stack reads clearly.
+            NSColor.black.setFill()
+            let ctx = NSGraphicsContext.current!
+            ctx.compositingOperation = .destinationOut
+            NSBezierPath(roundedRect: frontRect.insetBy(dx: -1.2, dy: -1.2), xRadius: r + 1, yRadius: r + 1).fill()
+            ctx.compositingOperation = .sourceOver
+            NSBezierPath(roundedRect: frontRect, xRadius: r, yRadius: r).fill()
+            // Avatar dot knocked out of the front card.
+            ctx.compositingOperation = .destinationOut
+            NSBezierPath(ovalIn: NSRect(x: 3, y: 4, width: 3.4, height: 3.4)).fill()
+            ctx.compositingOperation = .sourceOver
+            return true
+        }
+        img.isTemplate = true
+        img.accessibilityDescription = "AgentSwitch"
+        return img
     }
 }

@@ -17,7 +17,7 @@ cat > "$CFG/config.json" <<JSON
 {"activeProfileID":"profile_2","enabledTools":["claude","codex"],"mappings":[],
  "profiles":[{"id":"profile_1","name":"Default"},{"id":"profile_2","name":"Vinyl"}],"showNameInMenuBar":true}
 JSON
-HOME="$T" .build/debug/AgentSwitch & PID=$!
+HOME="$T" .build/debug/AgentSwitch & PID=$!  # killed by PID below — never pkill, that would quit the real app
 sleep 3; kill $PID 2>/dev/null || true
 echo "--- shared"; find "$CFG/shared" | sed "s|$CFG/||"
 echo "--- profile links"; for p in profile_1 profile_2; do for i in commands skills settings.json; do printf "%s/claude/%s -> " $p $i; readlink "$P/$p/claude/$i" | sed "s|$CFG/||" || echo "(not a link)"; done; done
